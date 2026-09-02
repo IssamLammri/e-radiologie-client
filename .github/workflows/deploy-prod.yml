@@ -1,0 +1,86 @@
+name: Deploy e-radiologie client
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production
+        env:
+          VITE_API_BASE_URL: https://api.e-radiologie.com
+        run: npm run build
+
+      - name: Configure SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+
+          echo "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Prepare deployment directory
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh "$VPS_USER@$VPS_HOST" "
+            rm -rf ~/deploy-e-radiologie-client &&
+            mkdir -p ~/deploy-e-radiologie-client
+          "
+
+      - name: Upload frontend
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          rsync -az \
+            --delete \
+            --delete-excluded \
+            --exclude='server.cjs' \
+            --exclude='server.cjs.map' \
+            dist/ \
+            "$VPS_USER@$VPS_HOST:~/deploy-e-radiologie-client/"
+
+      - name: Publish website
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh "$VPS_USER@$VPS_HOST" "
+            sudo rsync -a --delete \
+              ~/deploy-e-radiologie-client/ \
+              /var/www/e-radiologie.com/ &&
+
+            sudo chown -R www-data:www-data /var/www/e-radiologie.com &&
+
+            sudo find /var/www/e-radiologie.com -type d -exec chmod 755 {} \; &&
+            sudo find /var/www/e-radiologie.com -type f -exec chmod 644 {} \; &&
+
+            rm -rf ~/deploy-e-radiologie-client
+          "
+
+      - name: Deployment completed
+        run: echo "Deployment completed successfully to https://e-radiologie.com"
