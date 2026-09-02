@@ -1310,3 +1310,5 @@ Responsable du développement et de l'architecture technique du projet.
 ---
 
 **E-radiologie Client — Copyright © 2026 Issam LAMMRI — Tous droits réservés.**
+
+Application conçue avec 💗 par [Issam LAMMRI](https://www.linkedin.com/in/issam-lammri-2a3174163/)

@@ -170,11 +170,17 @@ export function Layout() {
                 E-Radiologie &copy; {new Date().getFullYear()}. Plateforme de e-learning médicale.
               </p>
             </div>
-            <div className="mt-8 md:mt-0 md:order-1">
+            <div className="mt-8 md:mt-0 md:order-1 flex flex-col items-center md:items-start gap-2">
                <div className="flex items-center justify-center space-x-2">
                   <Activity className="h-5 w-5 text-sky-600" />
                   <span className="text-lg font-semibold text-slate-900">E-Radiologie</span>
                </div>
+               <p className="text-sm text-slate-500 flex items-center justify-center md:justify-start gap-1">
+                 Application conçue avec 💗 par 
+                 <a href="https://www.linkedin.com/in/issam-lammri-2a3174163/" target="_blank" rel="noopener noreferrer" className="font-medium text-slate-700 hover:text-sky-600 transition-colors">
+                   Issam LAMMRI
+                 </a>
+               </p>
             </div>
           </div>
         </div>
