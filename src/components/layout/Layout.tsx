@@ -26,11 +26,6 @@ export function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
-      {/* Disclaimer Banner */}
-      <div className="bg-amber-100 text-amber-900 border-b border-amber-200 text-xs py-2 text-center px-4">
-        <strong>Avertissement :</strong> Plateforme destinée aux professionnels et étudiants en imagerie médicale. Les contenus pédagogiques ne remplacent pas le jugement clinique.
-      </div>
-
       {/* Navigation */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
