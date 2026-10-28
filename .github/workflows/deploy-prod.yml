@@ -3,7 +3,7 @@ name: Deploy e-radiologie client
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
