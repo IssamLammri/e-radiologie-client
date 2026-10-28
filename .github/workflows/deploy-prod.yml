@@ -27,6 +27,8 @@ jobs:
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           VPS_HOST: ${{ secrets.VPS_HOST }}
         run: |
+          test -n "$VPS_HOST" || { echo "Missing repository secret VPS_HOST in e-radiologie-client"; exit 1; }
+          test -n "$VPS_SSH_KEY" || { echo "Missing repository secret VPS_SSH_KEY in e-radiologie-client"; exit 1; }
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
 
@@ -41,9 +43,24 @@ jobs:
           VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ${{ secrets.VPS_USER }}
         run: |
-          ssh "$VPS_USER@$VPS_HOST" \
-            'test -f ~/projets/e-radiologie-client/.env.local && sed -n "/^VITE_API_BASE_URL=/p" ~/projets/e-radiologie-client/.env.local' > .env.local
-          grep -q '^VITE_API_BASE_URL=.' .env.local
+          test -n "$VPS_USER" || { echo "Missing repository secret VPS_USER in e-radiologie-client"; exit 1; }
+          ssh "$VPS_USER@$VPS_HOST" 'set -eu
+            config="$HOME/projets/e-radiologie-client/.env.local"
+            if [ ! -f "$config" ]; then
+              echo "Missing $config on the VPS" >&2
+              exit 1
+            fi
+            value=$(sed -n "s/^VITE_API_BASE_URL=//p" "$config" | tail -n 1)
+            if [ -z "$value" ]; then
+              echo "VITE_API_BASE_URL is missing or empty in $config" >&2
+              exit 1
+            fi
+            printf "VITE_API_BASE_URL=%s\\n" "$value"
+          ' > .env.local
+          grep -q '^VITE_API_BASE_URL=.' .env.local || {
+            echo "The VPS did not return a valid VITE_API_BASE_URL"
+            exit 1
+          }
 
       - name: Build production
         run: npm run build
