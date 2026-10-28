@@ -1,11 +1,12 @@
 import express from "express";
 import path from "path";
+import { createServer } from "node:http";
 import dotenv from "dotenv";
 import { GoogleGenAI, Type } from "@google/genai";
 import { createServer as createViteServer } from "vite";
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: [".env.local", ".env"] });
 
 const app = express();
 const PORT = 3000;
@@ -325,9 +326,13 @@ Générez impérativement votre réponse sous la forme d'un objet JSON strict va
 
 // Setup Vite & Server runtime
 async function startServer() {
+  const server = createServer(app);
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        hmr: process.env.DISABLE_HMR === "true" ? false : { server },
+      },
       appType: "spa",
     });
     app.use(vite.middlewares);
@@ -339,7 +344,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
+  server.listen(PORT, "0.0.0.0", () => {
     console.log(`[PACS Station Server] running securely on http://localhost:${PORT}`);
   });
 }

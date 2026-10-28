@@ -1,0 +1,145 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: white;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #0f172a;
+  font-size: 10pt;
+}
+.report-paper {
+  width: 100%;
+  padding: 8mm 5mm;
+}
+.report-letterhead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #b8cce6;
+  break-inside: avoid;
+}
+.report-letterhead > div {
+  flex: 1;
+}
+.report-letterhead h2 {
+  font-size: 11pt;
+  margin: 0 0 3px;
+  text-transform: uppercase;
+}
+.report-letterhead p {
+  font-size: 8pt;
+  color: #64748b;
+  margin: 2px 0;
+  white-space: pre-wrap;
+}
+.report-letterhead img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+.clinic-logo {
+  font-size: 35px;
+  color: #0284c7;
+}
+.clinic-logo.cross_green {
+  color: #059669;
+}
+.clinic-logo.ring {
+  color: #6366f1;
+}
+.report-paper > h3 {
+  font-size: 11pt;
+  text-align: center;
+  text-transform: uppercase;
+  text-decoration: underline;
+  margin: 28px 0;
+}
+.report-patient {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  background: #f8fafc;
+  border: 1px solid #dce5f0;
+  padding: 13px;
+  border-radius: 8px;
+  margin-bottom: 22px;
+  break-inside: avoid;
+}
+.report-patient strong {
+  font-size: 8pt;
+  color: #64748b;
+  text-transform: uppercase;
+}
+.report-patient p {
+  margin: 5px 0 0;
+}
+.report-indication {
+  border-left: 2px solid #b8cce6;
+  padding-left: 10px;
+  margin: 18px 0;
+}
+.report-indication h4,
+.report-conclusion h4 {
+  font-size: 8pt;
+  text-transform: uppercase;
+  margin: 0 0 7px;
+}
+.report-indication p {
+  font-style: italic;
+  margin: 0;
+  white-space: pre-wrap;
+}
+.report-body {
+  border-left: 2px solid #0ea5e9;
+  padding-left: 10px;
+}
+.rich-content {
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.rich-content p {
+  margin: 0 0 8px;
+}
+.rich-content h1,
+.rich-content h2,
+.rich-content h3 {
+  margin: 16px 0 7px;
+  font-size: 11pt;
+}
+.rich-content ul,
+.rich-content ol {
+  padding-left: 22px;
+}
+.rich-content img {
+  max-width: 100%;
+}
+.report-conclusion {
+  border: 1px solid #0f172a;
+  border-radius: 7px;
+  background: #f8fafc;
+  padding: 15px;
+  margin-top: 20px;
+  break-inside: avoid;
+}
+.report-paper footer {
+  margin-top: 28px;
+  padding-top: 14px;
+  border-top: 1px dashed #cbd5e1;
+  break-inside: avoid;
+}
+.report-paper footer p {
+  font-size: 9pt;
+  margin: 0 0 5px;
+}
+@page {
+  size: A4;
+  margin: 12mm;
+}
+@media print {
+  body {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

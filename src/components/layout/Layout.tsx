@@ -1,6 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Activity, BookOpen, LayoutDashboard, Search, UploadCloud, UserCircle, Menu, X, Heart, Award, FileText, Brain, ClipboardList, LogOut } from 'lucide-react';
-import { useState } from 'react';
+import { Activity, BookOpen, UserCircle, Menu, X, FileText, ClipboardList, LogOut } from 'lucide-react';
+import { Suspense, useState } from 'react';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/Button';
 import { useAuth } from '../../contexts/AuthContext';
@@ -14,10 +14,9 @@ export function Layout() {
 
   const navigation = [
     { name: 'Accueil', href: '/', icon: Activity },
-    ...(isAuthenticated ? [
-      { name: 'Cas Cliniques', href: '/cases', icon: Search },
-      { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    ] : [])
+    { name: 'Apprendre', href: '/academy', icon: BookOpen },
+    { name: 'Classifications', href: '/classifications', icon: ClipboardList },
+    { name: 'Comptes rendus', href: '/reports', icon: FileText },
   ];
 
   const handleLogout = () => {
@@ -29,7 +28,7 @@ export function Layout() {
     <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Disclaimer Banner */}
       <div className="bg-amber-100 text-amber-900 border-b border-amber-200 text-xs py-2 text-center px-4">
-        <strong>Avertissement :</strong> Cette plateforme est destinée à la formation médicale (professionnels et étudiants). Les cas présentés ne remplacent pas un avis médical. Toutes les données patients sont strictement anonymisées.
+        <strong>Avertissement :</strong> Plateforme destinée aux professionnels et étudiants en imagerie médicale. Les contenus pédagogiques ne remplacent pas le jugement clinique.
       </div>
 
       {/* Navigation */}
@@ -88,8 +87,10 @@ export function Layout() {
             </div>
 
             {/* Mobile menu button */}
-            <div className="flex items-center md:hidden">
+            <div className="flex items-center lg:hidden">
               <button
+                aria-label="Ouvrir le menu de navigation"
+                aria-expanded={isMobileMenuOpen}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 className="inline-flex items-center justify-center p-2 rounded-xl text-slate-400 hover:text-slate-500 hover:bg-slate-100 focus:outline-none"
               >
@@ -101,7 +102,7 @@ export function Layout() {
 
         {/* Mobile menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-200 bg-white">
+          <div className="lg:hidden border-t border-slate-200 bg-white">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {navigation.map((item) => {
                  const isActive = location.pathname === item.href || (item.href !== '/' && location.pathname.startsWith(item.href));
@@ -158,7 +159,9 @@ export function Layout() {
 
       {/* Main Content */}
       <main className="flex-1">
-        <Outlet />
+        <Suspense fallback={<div role="status" className="p-12 text-center text-slate-500">Chargement…</div>}>
+          <Outlet />
+        </Suspense>
       </main>
 
       {/* Footer */}

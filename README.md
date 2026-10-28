@@ -1,5 +1,15 @@
 # E-radiologie Client
 
+## Environnement local commun
+
+Depuis le dossier parent `E-RADIOLOGIE`, lancer `make start` pour démarrer le
+backend MySQL, phpMyAdmin et les deux interfaces. Voir le [guide local](../README.md)
+pour les comptes de test et les commandes. Cette interface est disponible sur
+http://localhost:3000 et utilise l'API http://localhost:18740.
+
+Pour un lancement hors Docker, définir `VITE_API_BASE_URL=http://localhost:18740`
+dans `.env.local` et utiliser `npm run dev`.
+
 Application web client de la plateforme **E-radiologie**, développée avec **React**, **TypeScript**, **Vite** et **Tailwind CSS**.
 
 > 🔒 **Projet propriétaire — Tous droits réservés**
@@ -192,7 +202,7 @@ Les principales variables prévues sont :
 ```env
 GEMINI_API_KEY="MY_GEMINI_API_KEY"
 APP_URL="MY_APP_URL"
-VITE_API_BASE_URL="http://api.e-radiologie.com"
+VITE_API_BASE_URL="http://localhost:18740"
 ```
 
 ### Configuration locale
@@ -213,13 +223,14 @@ Pour le déploiement statique actuel, la variable essentielle est :
 VITE_API_BASE_URL=https://api.e-radiologie.com
 ```
 
-Elle peut être définie dans :
-
-```text
-.env.production
-```
-
-ou injectée directement dans le workflow GitHub Actions pendant le build.
+Elle est définie dans le `.env.local` du projet pour chaque environnement.
+Le workflow lit `VITE_API_BASE_URL` dans
+`~/projets/e-radiologie-client/.env.local` sur le serveur avant de compiler.
+Ce fichier doit donc exister avant le premier déploiement. Seule cette variable
+publique est récupérée ; les autres secrets restent sur le serveur.
+En développement, Express charge aussi `.env.local` avant `.env`.
+Éviter une valeur concurrente dans `.env.production` ou l'environnement du build,
+qui aurait priorité sur `.env.local`.
 
 ### Variables serveur optionnelles
 
@@ -762,18 +773,9 @@ VPS_SSH_KEY
 
 ## Build dans GitHub Actions
 
-La variable backend doit être injectée au moment du build :
-
-```yaml
-env:
-  VITE_API_BASE_URL: https://api.e-radiologie.com
-```
-
-Puis :
-
-```yaml
-run: npm run build
-```
+Le workflow configure SSH, récupère uniquement `VITE_API_BASE_URL` depuis le
+`.env.local` du projet sur le serveur, puis lance `npm run build`.
+L'URL de l'API n'est pas définie en dur dans le workflow.
 
 Les variables préfixées par `VITE_` sont intégrées au bundle frontend pendant la compilation.
 
@@ -881,7 +883,7 @@ npm ci
 ### 3. Configurer le backend
 
 ```bash
-echo 'VITE_API_BASE_URL=https://api.e-radiologie.com' > .env.production
+# Éditer .env.local : VITE_API_BASE_URL=https://api.e-radiologie.com
 ```
 
 ### 4. Compiler
@@ -1312,3 +1314,20 @@ Responsable du développement et de l'architecture technique du projet.
 **E-radiologie Client — Copyright © 2026 Issam LAMMRI — Tous droits réservés.**
 
 Application conçue avec 💗 par [Issam LAMMRI](https://www.linkedin.com/in/issam-lammri-2a3174163/)
+## Parcours V1
+
+La navigation principale propose Accueil, Apprendre, Classifications et
+Comptes rendus, sur ordinateur comme sur mobile. Les entrées Cas cliniques et
+Dashboard sont masquées dans ce menu. L’accueil présente les trois derniers
+cours créés depuis `/api/content/courses?limit=3&page=1`, avec accès au cours
+et à l’Academy. Ses deux boutons principaux ouvrent les cours et les comptes
+rendus. Le rechargement Vite utilise le serveur HTTP Express pour fonctionner
+sur le port exposé par Docker.
+
+Les routes `/classifications`, `/academy`, `/academy/courses/:id`,
+`/academy/dems/:id` et `/reports` utilisent les API éditoriales du backend.
+Le WYSIWYG repose sur Tiptap. Les données personnelles d'un compte rendu restent
+dans l'état de la page ; seul le clic explicite d'enregistrement les transmet à
+l'API privée du médecin. L'impression/PDF et l'export texte sont locaux.
+
+Le [bilan V1](../V1_BILAN.md) décrit la recette et les points restant à cadrer.
